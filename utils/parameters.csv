@@ -1,0 +1,3 @@
+name;description;strerror;nbArgs
+f;specific file to analyze;"the parameter has to be this way (for exemple) ""-f exemple.log""";1
+l;specific level to analyze;"the parameter has to be this way (for exemple) ""-l ERROR""";1
