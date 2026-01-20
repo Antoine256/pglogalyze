@@ -32,3 +32,8 @@ Logs (LES 10 DERNIERS ?):
 .
 .
 .
+
+
+## V1
+
+un fichier donné par l'utilisateur => récupérer le paramètre et parser les lignes, donner le nombre d'erreur.

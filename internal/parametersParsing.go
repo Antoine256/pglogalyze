@@ -24,13 +24,13 @@ func getParamsFromFile() []Parameter {
 	osfile, err := os.Open("./utils/parameters.csv")
 
 	if err != nil {
-		internError("internal\\parametersParsing.go", err.Error())
+		PrintError("internal\\parametersParsing.go", err.Error())
 	}
 
 	file, err := os.ReadFile(osfile.Name())
 
 	if err != nil {
-		internError("internal\\parametersParsing.go", err.Error())
+		PrintError("internal\\parametersParsing.go", err.Error())
 	}
 
 	lines := strings.Split(string(file), "\n")
@@ -42,7 +42,7 @@ func getParamsFromFile() []Parameter {
 		splitLine := strings.Split(line, ";")
 		i, err := strconv.Atoi(splitLine[3])
 		if err != nil {
-			internError("internal\\parametersParsing.go", err.Error())
+			PrintError("internal\\parametersParsing.go", err.Error())
 		}
 		parameters = append(parameters, Parameter{
 			Name:        splitLine[0],
@@ -72,16 +72,17 @@ func getParam(name string, params []Parameter) *Parameter {
 
 func ParseParameters(stringParams string) *[]CmdParam {
 	params := getParamsFromFile()
-	splitStringParams := strings.Split(stringParams, "-")
+	splitStringParams := strings.Split(stringParams, " -")
 	cmdParams := []CmdParam{}
 
 	for _, p := range splitStringParams {
 		p = strings.TrimSpace(p)
+
 		if len(p) == 0 {
 			continue
 		}
 		splitp := strings.Split(p, " ")
-		param := getParam(splitp[0], params)
+		param := getParam(strings.Replace(splitp[0], "-", "", 1), params)
 		if param == nil {
 			paramsError(splitp[0], "not valid parameter")
 			return nil
@@ -97,4 +98,24 @@ func ParseParameters(stringParams string) *[]CmdParam {
 	}
 
 	return &cmdParams
+}
+
+func GetParams(name string, params []CmdParam, numArgs int) string {
+	res := ""
+	for i := range params {
+		if params[i].Param.Name == name {
+			res = params[i].Args[numArgs]
+		}
+	}
+	return res
+}
+
+func HasParams(name string, params []CmdParam) bool {
+	res := false
+	for i := range params {
+		if name == params[i].Param.Name {
+			res = true
+		}
+	}
+	return res
 }

@@ -1,3 +1,7 @@
 name;description;strerror;nbArgs
-f;specific file to analyze;"the parameter has to be this way (for exemple) ""-f exemple.log""";1
-l;specific level to analyze;"the parameter has to be this way (for exemple) ""-l ERROR""";1
+f;file to analyze;"the parameter has to be this way (for exemple) ""-f exemple.log""";1
+l;level to analyze;"the parameter has to be this way (for exemple) ""-l ERROR""";1
+c;config file, by defaut ??;;1
+db;db connection string;;1
+st;Start time of logs;"exemple ""2025-02-18 12:30:05""";2
+et;End time of logs;"exemple ""2025-02-18 12:40:05""";2

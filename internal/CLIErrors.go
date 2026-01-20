@@ -9,13 +9,18 @@ const (
 	Red    = "\033[31m"
 	Yellow = "\033[33m"
 	Green  = "\033[32m"
+	Blue   = "\033[34m"
 	Reset  = "\033[0m"
 )
 
 func paramsError(parameterName string, err string) {
-	fmt.Fprintln(os.Stderr, Red+"wrong parameter ("+parameterName+") :"+Reset, err)
+	fmt.Fprintln(os.Stderr, "wrong parameter ("+parameterName+") :"+Red, err, Reset)
 }
 
-func internError(file string, err string) {
-	fmt.Fprintln(os.Stderr, Red+"intern error file "+file+" : "+Reset, err)
+func PrintError(file string, err string) {
+	fmt.Fprintln(os.Stderr, "error in file "+file+" : "+Red, err, Reset)
+}
+
+func PrintInfo(info string) {
+	fmt.Fprintln(os.Stderr, Blue+"info : ", info, Reset)
 }
