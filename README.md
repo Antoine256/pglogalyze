@@ -1,34 +1,46 @@
 # pglogalyze
 
+A simple command-line tool for analyzing PostgreSQL log files.
 
-produit simple => une commande à lancer en psql pour les droits ou sinon spécifié user mdp en option
+## Overview
 
-analyze au présent en direct et/ou analyse des logs passés ?
+pglogalyze is a lightweight utility that parses and analyzes PostgreSQL log files, providing insights into database activity, query performance, and potential issues within a specified time range.
 
-lancement de la commande : pglogalyze --option1 --option2 parameter ....
+## Features
 
-Les différentes options :
-- lecture en direct (par défaut) ou dans un fichier spécifié sinon 
-- spécifié l'instance sinon variables globales ?
-- niveau de log (voir si je peux récupérer le niveau de verbosité de postgres s'il y en a un et afficher une erreur si c'est incompatible)
-- user mdp
-- database spécifique
-- type de log à surveiller (connexion, erreur de requête, timeout... voir en fonction des erreurs courantes postgres)
-- recherche d'un mot spécifique
-(METTRE DES COULEURS)
-pour récupérer les logs : https://betterstack.com/community/guides/logging/how-to-start-logging-with-postgresql/
+- Parse PostgreSQL log files
+- Filter logs by time range and severity
+- Simple command-line interface
 
-$> pglogalyze --option1 --option2 parameter
--- analyse de l'instance postgres "Nom de l'instance (en paramètre ou par défaut)
-surveillance des logs (AVEC LES OPTIONS) des fichiers suivants :
-- /data/pgsql/13/log/postgresql.log
-- /data/pgsql/15/log/postgresql.log
+## Installation
 
-Logs (LES 10 DERNIERS ?):
+### Prerequisites
 
-- 2023-07-30 08:31:50.628 UTC [2176] user@database listening on IPv4 address "127.0.0.1", port 5432
-.
-.
-.
-.
-.
+- Go 1.16 or higher
+
+## Usage
+
+### Basic Command
+
+```bash
+go run ./cmd/pglogalyze/main.go -f
+```
+
+### Example
+
+```bash
+go run ./cmd/pglogalyze/main.go \
+  -f ../../../Desktop/psql/log/postgresql-2026-01-18_124734.log \
+  -l INFO \
+  -st "2026-01-18 12:51:00" \
+  -et "2026-01-18 14:30:34"
+```
+
+### Command-line Options
+
+| Option | Description | Required | Format |
+|--------|-------------|----------|--------|
+| `-f` | Path to PostgreSQL log file | Yes | File path |
+| `-l` | Level of severity to analyze | No | `INFO - LOG - ...`
+| `-st` | Start time for analysis | No | `YYYY-MM-DD HH:MM:SS` |
+| `-et` | End time for analysis | No | `YYYY-MM-DD HH:MM:SS` |
