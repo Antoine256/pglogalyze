@@ -25,14 +25,13 @@ func main() {
 
 	// PATH
 
-	fmt.Println("FILE +>>>>>>>>>>>>> " + *file)
-
 	if *file != "" {
 		path := *file
 		if !internal.PathExists(path) {
 			fmt.Println("Error: -f (log file) is not reachable")
 			return
 		} else {
+			fmt.Println("Info: the logfile is : " + internal.Green + path + internal.Reset)
 			options.LogFilePath = path
 		}
 	} else {
@@ -61,6 +60,7 @@ func main() {
 		strHour := parseStartTime[1]
 		time := internal.StringToTime(strDate, strHour)
 		options.StartTime = &time
+		fmt.Println("Info: Start date defined as : " + internal.Green + strDate + " " + strHour + internal.Reset)
 	}
 
 	if *end != "" {
@@ -69,6 +69,7 @@ func main() {
 		strHour := parseEndTime[1]
 		time := internal.StringToTime(strDate, strHour)
 		options.EndTime = &time
+		fmt.Println("Info: End date defined as : " + internal.Green + strDate + " " + strHour + internal.Reset)
 	}
 
 	// Number of lines
@@ -79,11 +80,14 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-		options.NBLines = &nb
+		options.NBLines = nb
+	} else {
+		options.NBLines = 30
 	}
+	fmt.Println("Info: Number of lines (default 30) : " + internal.Green + strconv.Itoa((options.NBLines)) + internal.Reset)
 
 	//----------------------- READING LOG FILE -----------------------
-	fmt.Println(options)
+	//fmt.Println(options)
 	postgresparsing.ReadLogFile(options)
 
 }

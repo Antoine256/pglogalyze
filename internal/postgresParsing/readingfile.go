@@ -12,7 +12,7 @@ type Options struct {
 	Level       Severity
 	StartTime   *time.Time
 	EndTime     *time.Time
-	NBLines     *int
+	NBLines     int
 }
 
 func ReadLogFile(options Options) {
@@ -94,6 +94,12 @@ func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
 			}
 		}
 		lines = severityLines
+	}
+
+	// NBLines paramater
+
+	if len(lines) >= options.NBLines {
+		lines = lines[(len(lines) - options.NBLines):]
 	}
 
 	return lines
