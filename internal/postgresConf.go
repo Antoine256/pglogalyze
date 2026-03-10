@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+/*
 func GetPathByDatabaseConn(params []CmdParam) string {
 	//----------------------- GETTING DATABASE INFO ------------------
 	//définis dans le fichier de conf then => (ici env pour exemple)
@@ -27,7 +28,7 @@ func GetPathByDatabaseConn(params []CmdParam) string {
 		}
 		defer conn.Close(context.Background())
 
-	} else if HasParams("c", params) /* OR by default ??*/ {
+	} else if HasParams("c", params) /* OR by default ??*/ /* {
 
 		parameterFilePath := GetParams("c", params, 0)
 		connStr = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", "", "", "", "", "")
@@ -59,6 +60,7 @@ func GetPathByDatabaseConn(params []CmdParam) string {
 
 	return filePath
 }
+*/
 
 func verifConf(databaseConn *pgx.Conn, ctx context.Context) bool {
 	var loggingcol string

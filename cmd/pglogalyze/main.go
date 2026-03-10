@@ -1,71 +1,85 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"os"
 	"pglogalyze/internal"
 	postgresparsing "pglogalyze/internal/postgresParsing"
+	"strconv"
 	"strings"
 )
 
-var file []string
+var file = flag.String("f", "", "PostgreSQL log file")
+var severityLevel = flag.String("l", "", "Severity level")
+var start = flag.String("st", "", "Start time (YYYY-MM-DDTHH:MM:SS)")
+var end = flag.String("et", "", "End time (YYYY-MM-DDTHH:MM:SS)")
+var nbLines = flag.String("n", "", "Number of lines")
 
 func main() {
+
+	flag.Parse()
 
 	options := postgresparsing.Options{LogFilePath: "", Level: postgresparsing.NONE}
 
 	//---------------------- PARSING USER PARAMS ---------------------
 
-	cmdParams := internal.ParseParameters(strings.Join(os.Args[1:], " "))
-	if cmdParams == nil {
-		return
-	}
-
-	params := *cmdParams
-
 	// PATH
 
-	if internal.HasParams("f", params) {
-		path := internal.GetParams("f", params, 0)
+	fmt.Println("FILE +>>>>>>>>>>>>> " + *file)
+
+	if *file != "" {
+		path := *file
 		if !internal.PathExists(path) {
-			internal.PrintError("./main", "specified file doesn't exist : "+path)
+			fmt.Println("Error: -f (log file) is not reachable")
+			return
 		} else {
 			options.LogFilePath = path
 		}
 	} else {
 		internal.PrintInfo("Try to get log path by database informations")
+		fmt.Println("Error: -f (log file) is required")
 		//internal.GetPathByDatabaseConn(params)
+		return
 	}
 
 	// SEVERITY
 
-	if internal.HasParams("l", params) {
-		severity := internal.GetParams("l", params, 0)
+	if *severityLevel != "" {
+		severity := *severityLevel
 		if postgresparsing.IsAValidSeverity(severity) {
 			options.Level = postgresparsing.Severity(severity)
 		} else {
-			internal.PrintError("./main", "Level of severity is not correct : "+severity)
+			fmt.Println("Error: -l (severity level) doesn t exist")
 		}
 	}
 
 	// TIME
 
-	if internal.HasParams("st", params) {
-		strDate := internal.GetParams("st", params, 0)
-		strHour := internal.GetParams("st", params, 1)
-
+	if *start != "" {
+		parseStartTime := strings.Split(*start, "T")
+		strDate := parseStartTime[0]
+		strHour := parseStartTime[1]
 		time := internal.StringToTime(strDate, strHour)
-
 		options.StartTime = &time
 	}
 
-	if internal.HasParams("et", params) {
-		strDate := internal.GetParams("et", params, 0)
-		strHour := internal.GetParams("et", params, 1)
-
+	if *end != "" {
+		parseEndTime := strings.Split(*start, "T")
+		strDate := parseEndTime[0]
+		strHour := parseEndTime[1]
 		time := internal.StringToTime(strDate, strHour)
-
 		options.EndTime = &time
+	}
+
+	// Number of lines
+
+	if *nbLines != "" {
+		nb, err := strconv.Atoi(*nbLines)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		options.NBLines = &nb
 	}
 
 	//----------------------- READING LOG FILE -----------------------

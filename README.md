@@ -37,3 +37,26 @@ Logs (LES 10 DERNIERS ?):
 ## V1
 
 un fichier donné par l'utilisateur => récupérer le paramètre et parser les lignes, donner le nombre d'erreur.
+
+
+En dev :
+
+go run .\cmd\pglogalyze\main.go ....
+exemple : go run .\cmd\pglogalyze\main.go  -f ../../../Desktop/psql/log/postgresql-2026-01-18_124734.log -st 2026-01-18 12:51:00 -et 2026-01-18 14:30:34
+
+Pour BUILD :
+
+go build -o pglogalyze ./cmd/pglogalyze
+go build -o C:\Users\dupas\Documents\GitHub\pglogalyze ./cmd/pglogalyze
+
+Lancer le script .\UbuntuSharedFolder\build.ps1 depuis la racine de ce projet pour build l'image en mode linux et que le fichier soit mis dans le dossier partager 
+
+ensuite, il suffit de lancer la commande suivante depuis la VM ubuntu :
+pglogalyze -f /var/log/postgresql/postgresql-16-main.log -l LOG -et 2026-03-07T11:46:33
+
+pglogalyze -f ../../../Desktop/psql/log/postgresql-2026-01-18_124734.log -st 2026-01-18 12:51:00 -et 2026-01-18 14:30:34
+
+
+V2 définir l'os, dossier de log et le fichier le plus récent (ou en fonction de la date) et voir si l'user a le droit de lecture 
+
+mettre une limite de ligne par défaut et en paramètre.

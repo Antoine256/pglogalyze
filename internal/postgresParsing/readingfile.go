@@ -12,6 +12,7 @@ type Options struct {
 	Level       Severity
 	StartTime   *time.Time
 	EndTime     *time.Time
+	NBLines     *int
 }
 
 func ReadLogFile(options Options) {

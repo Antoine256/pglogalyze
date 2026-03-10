@@ -1,10 +1,15 @@
 package internal
 
+/*
 import (
 	"os"
 	"strconv"
 	"strings"
 )
+
+
+/////// OUTDATED FILE , NOW USING THE LIBRAIRIE FLAG
+
 
 type Parameter struct {
 	Name        string
@@ -119,3 +124,4 @@ func HasParams(name string, params []CmdParam) bool {
 	}
 	return res
 }
+*/

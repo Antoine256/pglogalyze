@@ -1,0 +1,1 @@
+pglogalyze -f /var/log/postgresql/postgresql-16-main.log -l LOG -et 2026-03-07T11:46:33
