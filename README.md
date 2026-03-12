@@ -46,8 +46,8 @@ exemple : go run .\cmd\pglogalyze\main.go  -f ../../../Desktop/psql/log/postgres
 
 Pour BUILD :
 
-go build -o pglogalyze ./cmd/pglogalyze
-go build -o C:\Users\dupas\Documents\GitHub\pglogalyze ./cmd/pglogalyze
+//go build -o pglogalyze ./cmd/pglogalyze
+//go build -o C:\Users\dupas\Documents\GitHub\pglogalyze ./cmd/pglogalyze
 
 Lancer le script .\UbuntuSharedFolder\build.ps1 depuis la racine de ce projet pour build l'image en mode linux et que le fichier soit mis dans le dossier partager 
 
@@ -57,6 +57,9 @@ pglogalyze -f /var/log/postgresql/postgresql-16-main.log -l LOG -et 2026-03-07T1
 pglogalyze -f ../../../Desktop/psql/log/postgresql-2026-01-18_124734.log -st 2026-01-18 12:51:00 -et 2026-01-18 14:30:34
 
 
-V2 définir l'os, dossier de log et le fichier le plus récent (ou en fonction de la date) et voir si l'user a le droit de lecture 
+V2 Ajout de fonctionnalitées d'annalyse...(applicatif vs infra ??), lecture en direct, database spécifiquement
+type de recherche: statement (aussi une severity), connection, duration, checkpoint, starting PostgreSQL and shutting down
 
+V3 définir l'os, dossier de log et le fichier le plus récent (ou en fonction de la date) et voir si l'user a le droit de lecture, voir si possible de récupérer via les infos du services postgres mais peut être compliqué en fonction des droits user.
+ 
 mettre une limite de ligne par défaut et en paramètre.

@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"os"
 	"pglogalyze/internal"
+	"strconv"
 	"time"
 )
 
 type Options struct {
 	LogFilePath string
 	Level       Severity
+	LogType     LType
 	StartTime   *time.Time
 	EndTime     *time.Time
 	NBLines     int
@@ -32,10 +34,13 @@ func ReadLogFile(options Options) {
 	lines := parseFile(file)
 
 	//parse the Lines to ParsedLineType
+	//A OPTIMISER > parse toutes les lignes avec toutes les infos (pas en fonction des paramètres)
 	parsedLines := parseLines(lines)
 
 	//Sort lines depending on options
 	sortedParsedLines := sortLogsLines(parsedLines, options)
+
+	fmt.Println("Nombre de lignes trouvées " + strconv.Itoa(len(sortedParsedLines)) + "/" + strconv.Itoa(options.NBLines))
 
 	for i := 0; i < len(sortedParsedLines); i++ {
 		fmt.Println(sortedParsedLines[i].toString())
@@ -52,7 +57,8 @@ func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
 	// Start and End time parameters
 
 	if options.StartTime != nil {
-		//RECHERCHE DICHO ???
+		//RECHERCHE DICHO !!!!
+		//A OPTIMISER > parcours toutes les lignes et s'arrête quand atteint la date de départ
 		i := 0
 		for i < len(lines) {
 			if lines[i].time.Compare(*options.StartTime) >= 0 {
@@ -61,6 +67,7 @@ func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
 				i++
 			}
 		}
+		//A OPTIMISER > Si pas de lignes donc la boucle à tout parcouru (peut être su direct ...)
 		if i == len(lines) {
 			internal.PrintInfo("No line found after the start time " + options.StartTime.Format(time.UnixDate))
 			return []ParsedLineType{}
@@ -70,6 +77,8 @@ func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
 
 	if options.EndTime != nil {
 		i := len(lines) - 1
+		//Comme start date mais en partant de la fin, à optimiser pareil, on peut savoir si la première
+		// ligne est après donc 0 lignes correcte, voir pour recherche dicho
 		for i > 0 {
 			if lines[i].time.Compare(*options.EndTime) <= 0 {
 				break
@@ -81,6 +90,7 @@ func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
 			internal.PrintInfo("No line found before the end time " + options.EndTime.Format(time.UnixDate))
 			return []ParsedLineType{}
 		}
+		//pas sur de celui là, voir quand on est à 0 et quand on est à len(lignes)-1
 		lines = lines[:i+1]
 	}
 
@@ -96,7 +106,20 @@ func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
 		lines = severityLines
 	}
 
+	//LogType parameter
+	if options.LogType != ALL {
+		typeLines := []ParsedLineType{}
+		for i := range lines {
+			if lines[i].logtype == options.LogType {
+				typeLines = append(typeLines, lines[i])
+			}
+		}
+		lines = typeLines
+	}
+
 	// NBLines paramater
+	// possible de l'améliorer en retournant dès qu'on a le nombre
+	// de ligne en fonction des options mais obligé d'être le dernier, à voir
 
 	if len(lines) >= options.NBLines {
 		lines = lines[(len(lines) - options.NBLines):]
