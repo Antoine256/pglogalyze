@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"pglogalyze/internal"
 	postgresparsing "pglogalyze/internal/postgresParsing"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 
 var file = flag.String("f", "", "PostgreSQL log file")
 var severityLevel = flag.String("l", "", "Severity level")
-var logType = flag.String("t", "", "Type of the log : REQUEST | CONNECTION | DURATION | CHECKPOINT | STARTUP | SHUTDOWN")
+var logType = flag.String("t", "", "Type of the log : QUERY | CONNECTION | DURATION | CHECKPOINT | STARTUP | SHUTDOWN")
 var start = flag.String("st", "", "Start time (YYYY-MM-DDTHH:MM:SS)")
 var end = flag.String("et", "", "End time (YYYY-MM-DDTHH:MM:SS)")
 var nbLines = flag.String("n", "20", "Number of lines")
@@ -29,15 +30,15 @@ func main() {
 	if *file != "" {
 		path := *file
 		if !internal.PathExists(path) {
-			fmt.Println("Error : -f (log file) is not reachable")
+			fmt.Fprintln(os.Stdout, internal.Red, "Error", internal.Reset, " : -f (log file) is not reachable")
 			return
 		} else {
-			fmt.Println("Info : the logfile is : " + internal.Green + path + internal.Reset)
+			fmt.Fprintln(os.Stdout, "the logfile is : ", internal.Yellow, path, internal.Reset)
 			options.LogFilePath = path
 		}
 	} else {
 		internal.PrintInfo("Try to get log path by database informations")
-		fmt.Println("Error : -f (log file) is required")
+		fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, " : -f (log file) is required")
 		//internal.GetPathByDatabaseConn(params)
 		return
 	}
@@ -49,7 +50,7 @@ func main() {
 		if postgresparsing.IsAValidSeverity(severity) {
 			options.Level = postgresparsing.Severity(severity)
 		} else {
-			fmt.Println("Error : -l (severity level) doesn t exist")
+			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, " : -l (severity level) doesn t exist")
 		}
 	}
 
@@ -60,7 +61,7 @@ func main() {
 		if postgresparsing.IsAValidType(LType) {
 			options.LogType = postgresparsing.LType(LType)
 		} else {
-			fmt.Println("Error : -l (severity level) doesn t exist")
+			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, " : -l (severity level) doesn t exist")
 		}
 	}
 
@@ -72,7 +73,7 @@ func main() {
 		strHour := parseStartTime[1]
 		time := internal.StringToTime(strDate, strHour)
 		options.StartTime = &time
-		fmt.Println("Info : Start date defined as : " + internal.Green + strDate + " " + strHour + internal.Reset)
+		fmt.Fprintln(os.Stdout, "Start date defined as : ", internal.Yellow, strDate, " ", strHour, internal.Reset)
 	}
 
 	if *end != "" {
@@ -81,7 +82,7 @@ func main() {
 		strHour := parseEndTime[1]
 		time := internal.StringToTime(strDate, strHour)
 		options.EndTime = &time
-		fmt.Println("Info : End date defined as : " + internal.Green + strDate + " " + strHour + internal.Reset)
+		fmt.Fprintln(os.Stdout, "End date defined as : ", internal.Yellow, strDate, " ", strHour, internal.Reset)
 	}
 
 	// Number of lines
@@ -94,10 +95,10 @@ func main() {
 		}
 		options.NBLines = nb
 	}
-	fmt.Println("Info : Number of lines (default 20) : " + internal.Green + strconv.Itoa((options.NBLines)) + internal.Reset)
+	fmt.Fprintln(os.Stdout, "Number of lines : ", internal.Yellow, strconv.Itoa((options.NBLines)), internal.Reset)
 
 	//----------------------- READING LOG FILE -----------------------
-	//fmt.Println(options)
+	fmt.Println("---------------------- LOGS ----------------------")
 	postgresparsing.ReadLogFile(options)
 
 }

@@ -43,13 +43,29 @@ func ReadLogFile(options Options) {
 	fmt.Println("Nombre de lignes trouvées " + strconv.Itoa(len(sortedParsedLines)) + "/" + strconv.Itoa(options.NBLines))
 
 	for i := 0; i < len(sortedParsedLines); i++ {
-		fmt.Println(sortedParsedLines[i].toString())
+		if len(sortedParsedLines[i].pid) < 7 {
+			for j := 0; j < 7; j++ {
+				if len(sortedParsedLines[i].pid) == 7 {
+					break
+				}
+				sortedParsedLines[i].pid = sortedParsedLines[i].pid + " "
+			}
+		}
+		if sortedParsedLines[i].bddInfo != "" {
+			fmt.Println(sortedParsedLines[i].toStringPlus())
+		} else {
+			fmt.Println(sortedParsedLines[i].toString())
+		}
 	}
 
 }
 
+func (l ParsedLineType) toStringPlus() string {
+	return l.date + " " + l.hour + " " + l.timeZone + " " + l.pid + " " + internal.Green.String() + string(l.bddInfo) + " " + l.severityColor.String() + string(l.severity) + internal.Reset.String() + ":" + l.logMessage
+}
+
 func (l ParsedLineType) toString() string {
-	return l.date + " " + l.hour + " " + l.timeZone + " " + l.pid + " " + string(l.severity) + ":" + l.logMessage
+	return l.date + " " + l.hour + " " + l.timeZone + " " + l.pid + " " + l.severityColor.String() + string(l.severity) + internal.Reset.String() + ":" + l.logMessage
 }
 
 func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
@@ -110,6 +126,7 @@ func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
 	if options.LogType != ALL {
 		typeLines := []ParsedLineType{}
 		for i := range lines {
+			fmt.Println("log type rechercher :" + options.LogType + " / " + lines[i].logtype)
 			if lines[i].logtype == options.LogType {
 				typeLines = append(typeLines, lines[i])
 			}
