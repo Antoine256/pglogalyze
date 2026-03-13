@@ -30,15 +30,15 @@ func main() {
 	if *file != "" {
 		path := *file
 		if !internal.PathExists(path) {
-			fmt.Fprintln(os.Stdout, internal.Red, "Error", internal.Reset, " : -f (log file) is not reachable")
+			fmt.Fprintln(os.Stdout, internal.Red, "Error", internal.Reset, ": -f (log file) is not reachable")
 			return
 		} else {
-			fmt.Fprintln(os.Stdout, "the logfile is : ", internal.Yellow, path, internal.Reset)
+			fmt.Fprintln(os.Stdout, "the logfile is :", internal.Yellow, path, internal.Reset)
 			options.LogFilePath = path
 		}
 	} else {
 		internal.PrintInfo("Try to get log path by database informations")
-		fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, " : -f (log file) is required")
+		fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -f (log file) is required")
 		//internal.GetPathByDatabaseConn(params)
 		return
 	}
@@ -50,18 +50,18 @@ func main() {
 		if postgresparsing.IsAValidSeverity(severity) {
 			options.Level = postgresparsing.Severity(severity)
 		} else {
-			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, " : -l (severity level) doesn t exist")
+			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -l (severity level) doesn t exist")
 		}
 	}
 
 	// LOGTYPE
 
 	if *logType != "" {
-		LType := *logType
+		LType := strings.ToUpper(*logType)
 		if postgresparsing.IsAValidType(LType) {
 			options.LogType = postgresparsing.LType(LType)
 		} else {
-			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, " : -l (severity level) doesn t exist")
+			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -l (severity level) doesn t exist")
 		}
 	}
 
@@ -73,16 +73,16 @@ func main() {
 		strHour := parseStartTime[1]
 		time := internal.StringToTime(strDate, strHour)
 		options.StartTime = &time
-		fmt.Fprintln(os.Stdout, "Start date defined as : ", internal.Yellow, strDate, " ", strHour, internal.Reset)
+		fmt.Fprintln(os.Stdout, "Start date defined as :", internal.Yellow, strDate, strHour, internal.Reset)
 	}
 
 	if *end != "" {
-		parseEndTime := strings.Split(*start, "T")
+		parseEndTime := strings.Split(*end, "T")
 		strDate := parseEndTime[0]
 		strHour := parseEndTime[1]
 		time := internal.StringToTime(strDate, strHour)
 		options.EndTime = &time
-		fmt.Fprintln(os.Stdout, "End date defined as : ", internal.Yellow, strDate, " ", strHour, internal.Reset)
+		fmt.Fprintln(os.Stdout, "End date defined as :", internal.Yellow, strDate, strHour, internal.Reset)
 	}
 
 	// Number of lines

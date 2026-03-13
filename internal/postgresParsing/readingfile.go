@@ -43,6 +43,7 @@ func ReadLogFile(options Options) {
 	fmt.Println("Nombre de lignes trouvées " + strconv.Itoa(len(sortedParsedLines)) + "/" + strconv.Itoa(options.NBLines))
 
 	for i := 0; i < len(sortedParsedLines); i++ {
+		//Permet d'aligner les lignes après le PID
 		if len(sortedParsedLines[i].pid) < 7 {
 			for j := 0; j < 7; j++ {
 				if len(sortedParsedLines[i].pid) == 7 {
@@ -95,18 +96,17 @@ func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
 		i := len(lines) - 1
 		//Comme start date mais en partant de la fin, à optimiser pareil, on peut savoir si la première
 		// ligne est après donc 0 lignes correcte, voir pour recherche dicho
-		for i > 0 {
+		for i >= 0 {
 			if lines[i].time.Compare(*options.EndTime) <= 0 {
 				break
 			} else {
 				i--
 			}
 		}
-		if i == 0 {
+		if i == -1 {
 			internal.PrintInfo("No line found before the end time " + options.EndTime.Format(time.UnixDate))
 			return []ParsedLineType{}
 		}
-		//pas sur de celui là, voir quand on est à 0 et quand on est à len(lignes)-1
 		lines = lines[:i+1]
 	}
 
@@ -126,7 +126,6 @@ func sortLogsLines(lines []ParsedLineType, options Options) []ParsedLineType {
 	if options.LogType != ALL {
 		typeLines := []ParsedLineType{}
 		for i := range lines {
-			fmt.Println("log type rechercher :" + options.LogType + " / " + lines[i].logtype)
 			if lines[i].logtype == options.LogType {
 				typeLines = append(typeLines, lines[i])
 			}

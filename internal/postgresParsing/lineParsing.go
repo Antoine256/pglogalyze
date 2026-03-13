@@ -115,7 +115,7 @@ func parseLine(line string) ParsedLineType {
 		logMessage:    lineMessage,
 	}
 
-	parsedLine.time = internal.StringToTime(splitLine[0], splitLine[1])
+	parsedLine.time = internal.StringToTime(lineDate, splitLine[1])
 
 	return parsedLine
 }
