@@ -5,17 +5,39 @@ import (
 	"os"
 )
 
+type CMDCOLOR int
+
 const (
-	Red    = "\033[31m"
-	Yellow = "\033[33m"
-	Green  = "\033[32m"
-	Reset  = "\033[0m"
+	Red CMDCOLOR = iota
+	Yellow
+	Green
+	Blue
+	Reset
 )
 
-func paramsError(parameterName string, err string) {
-	fmt.Fprintln(os.Stderr, Red+"wrong parameter ("+parameterName+") :"+Reset, err)
+var colorstring = map[CMDCOLOR]string{
+	Red:    "\033[1;91m",
+	Yellow: "\033[1;93m",
+	Green:  "\033[1;92m",
+	Blue:   "\033[1;94m",
+	Reset:  "\033[0m",
 }
 
-func internError(file string, err string) {
-	fmt.Fprintln(os.Stderr, Red+"intern error file "+file+" : "+Reset, err)
+func (cc CMDCOLOR) String() string {
+	if s, ok := colorstring[cc]; ok {
+		return s
+	}
+	return ""
+}
+
+func paramsError(parameterName string, err string) {
+	fmt.Fprintln(os.Stderr, "wrong parameter ("+parameterName+") :", Red, err, Reset)
+}
+
+func PrintError(file string, err string) {
+	fmt.Fprintln(os.Stderr, "error in file "+file+" : ", Red, err, Reset)
+}
+
+func PrintInfo(info string) {
+	fmt.Fprintln(os.Stderr, Blue.String()+"info : ", info, Reset)
 }
