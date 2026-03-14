@@ -1,4 +1,6 @@
 Pour build le projet (pour avoir une version linux) depuis windows, utiliser build.ps1.
 
 
+sudo usermod -aG adm,cdrom,sudo,dip,plugdev,lpadmin,vboxsf antoine
+
 Lancer : pglogalyze -f ../../../Desktop/psql/log/postgresql-2026-01-18_124734.log -st 2026-01-18 12:51:00 -et 2026-01-18 14:30:34

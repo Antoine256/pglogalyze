@@ -40,7 +40,7 @@ func ReadLogFile(options Options) {
 	//Sort lines depending on options
 	sortedParsedLines := sortLogsLines(parsedLines, options)
 
-	fmt.Println("Nombre de lignes trouvées " + strconv.Itoa(len(sortedParsedLines)) + "/" + strconv.Itoa(options.NBLines))
+	fmt.Println("Lines found : " + internal.Yellow.String() + strconv.Itoa(len(sortedParsedLines)) + "/" + strconv.Itoa(options.NBLines) + internal.Reset.String())
 
 	for i := 0; i < len(sortedParsedLines); i++ {
 		//Permet d'aligner les lignes après le PID

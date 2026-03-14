@@ -15,7 +15,7 @@ var severityLevel = flag.String("l", "", "Severity level")
 var logType = flag.String("t", "", "Type of the log : QUERY | CONNECTION | DURATION | CHECKPOINT | STARTUP | SHUTDOWN")
 var start = flag.String("st", "", "Start time (YYYY-MM-DDTHH:MM:SS)")
 var end = flag.String("et", "", "End time (YYYY-MM-DDTHH:MM:SS)")
-var nbLines = flag.String("n", "20", "Number of lines")
+var nbLines = flag.Int("n", 20, "Number of lines")
 
 func main() {
 
@@ -37,7 +37,6 @@ func main() {
 			options.LogFilePath = path
 		}
 	} else {
-		internal.PrintInfo("Try to get log path by database informations")
 		fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -f (log file) is required")
 		//internal.GetPathByDatabaseConn(params)
 		return
@@ -87,12 +86,8 @@ func main() {
 
 	// Number of lines
 
-	if *nbLines != "" {
-		nb, err := strconv.Atoi(*nbLines)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+	if *nbLines != 20 {
+		nb := *nbLines
 		options.NBLines = nb
 	}
 	fmt.Fprintln(os.Stdout, "Number of lines : ", internal.Yellow, strconv.Itoa((options.NBLines)), internal.Reset)
