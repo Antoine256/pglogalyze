@@ -8,6 +8,7 @@ import (
 	postgresparsing "pglogalyze/internal/postgresParsing"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var file = flag.String("f", "", "PostgreSQL log file")
@@ -18,6 +19,8 @@ var end = flag.String("et", "", "End time (YYYY-MM-DDTHH:MM:SS)")
 var nbLines = flag.Int("n", 20, "Number of lines")
 
 func main() {
+
+	timeStart := time.Now()
 
 	flag.Parse()
 
@@ -107,5 +110,8 @@ func main() {
 	//----------------------- READING LOG FILE -----------------------
 	fmt.Println("---------------------- LOGS ----------------------")
 	postgresparsing.ReadLogFile(options)
+
+	elapsed := time.Since(timeStart)
+	fmt.Printf("Resolved in : %s\n", elapsed)
 
 }
