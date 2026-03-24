@@ -16,7 +16,7 @@ func parseFile(file []byte) []string {
 	buffer := ""
 	bufferAP := false
 	for i < len(splitFile) {
-		if i > 0 && r.MatchString(splitFile[i]) || r2.MatchString(splitFile[i]) {
+		if i > 0 && (r.MatchString(splitFile[i]) || r2.MatchString(splitFile[i])) {
 			//on valide la ligne précédente si la ligne actuelle commence par le log préfix
 			if bufferAP {
 				//si c'était une ligne appli, on ajoute avec l'indicateur

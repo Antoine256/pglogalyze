@@ -48,9 +48,9 @@ for _ in range(NUM_LINES):
     if random.random() < 0.5:
         user = random.choice(USERS)
         db = random.choice(DBS)
-        line = (ts, f"{ts.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]} [{pid}] {level}: [{user}@{db}] {message}\n")
+        line = (ts, f"{ts.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]} UTC [{pid}] {user}@{db} {level}: {message}\n")
     else:
-        line = (ts, f"{ts.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]} [{pid}] {level}: {message}\n")
+        line = (ts, f"{ts.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]} UTC [{pid}] {level}: {message}\n")
     
     lines.append(line)
 
