@@ -17,7 +17,13 @@ type Options struct {
 	NBLines     int
 }
 
-func ReadLogFile(options Options) {
+func ReadLogFile(options Options, timeStart time.Time) {
+
+	elapsed := time.Since(timeStart)
+	tmpTime := time.Now()
+	elapsedTmp := time.Since(tmpTime)
+	fmt.Println("Start reading after ", elapsed)
+
 	osfile, err := os.Open(options.LogFilePath)
 
 	if err != nil {
@@ -33,12 +39,31 @@ func ReadLogFile(options Options) {
 	//get Lines of the file as []string
 	lines := parseFile(file)
 
+	if len(lines) == 0 {
+		fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": File is empty or logs pattern is not recognize")
+		return
+	}
+
+	elapsed = time.Since(timeStart)
+	elapsedTmp = time.Since(tmpTime)
+	fmt.Println("finish parsed file after ", elapsed, "=> duration : ", elapsedTmp)
+	tmpTime = time.Now()
+
 	//parse the Lines to ParsedLineType
 	//A OPTIMISER > parse toutes les lignes avec toutes les infos (pas en fonction des paramètres)
 	parsedLines := parseLines(lines)
 
+	elapsed = time.Since(timeStart)
+	elapsedTmp = time.Since(tmpTime)
+	fmt.Println("finish parsed line after ", elapsed, "=> duration : ", elapsedTmp)
+	tmpTime = time.Now()
+
 	//Sort lines depending on options
 	sortedParsedLines := sortLogsLines(parsedLines, options)
+
+	elapsed = time.Since(timeStart)
+	elapsedTmp = time.Since(tmpTime)
+	fmt.Println("finish sort after ", elapsed, "=> duration : ", elapsedTmp)
 
 	fmt.Println("Lines found : " + internal.Yellow.String() + strconv.Itoa(len(sortedParsedLines)) + "/" + strconv.Itoa(options.NBLines) + internal.Reset.String())
 
