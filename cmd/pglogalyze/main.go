@@ -68,28 +68,40 @@ func main() {
 
 	if *start != "" {
 		parseStartTime := strings.Split(*start, "T")
+		if len(parseStartTime) != 2 {
+			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -st format is not good")
+			return
+		}
 		strDate := parseStartTime[0]
 		strHour := parseStartTime[1]
 		time := internal.StringToTime(strDate, strHour)
 		options.StartTime = &time
-		fmt.Fprintln(os.Stdout, "Start date defined as :", internal.Yellow, strDate, strHour, internal.Reset)
+		fmt.Fprintln(os.Stdout, "Start time defined as :", internal.Yellow, strDate, strHour, internal.Reset)
 	}
 
 	if *end != "" {
 		parseEndTime := strings.Split(*end, "T")
+		if len(parseEndTime) != 2 {
+			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -et format is not good")
+			return
+		}
 		strDate := parseEndTime[0]
 		strHour := parseEndTime[1]
 		time := internal.StringToTime(strDate, strHour)
 		options.EndTime = &time
-		fmt.Fprintln(os.Stdout, "End date defined as :", internal.Yellow, strDate, strHour, internal.Reset)
+		fmt.Fprintln(os.Stdout, "End time defined as :", internal.Yellow, strDate, strHour, internal.Reset)
 	}
 
 	// Number of lines
 
-	if *nbLines != 20 {
+	if *nbLines != 0 {
 		nb := *nbLines
 		options.NBLines = nb
+	} else {
+		fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -n = 0")
+		return
 	}
+
 	fmt.Fprintln(os.Stdout, "Number of lines : ", internal.Yellow, strconv.Itoa((options.NBLines)), internal.Reset)
 
 	//----------------------- READING LOG FILE -----------------------
