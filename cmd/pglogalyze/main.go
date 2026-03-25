@@ -41,7 +41,6 @@ func main() {
 		}
 	} else {
 		fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -f (log file) is required")
-		//internal.GetPathByDatabaseConn(params)
 		return
 	}
 
