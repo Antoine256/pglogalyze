@@ -102,8 +102,6 @@ func getLines(file *os.File, options Options) []ParsedLineType {
 		}
 	}
 
-	// Vérfier les params et ajouter la lignes (si ici alors encore de la place sinon return plus hiat dès que possible)
-
 	return lines
 
 }

@@ -108,7 +108,7 @@ func main() {
 
 	//----------------------- READING LOG FILE -----------------------
 	fmt.Println("---------------------- LOGS ----------------------")
-	postgresparsing.ReadLogFile(options, timeStart)
+	postgresparsing.ReadLogFile(options)
 
 	elapsed := time.Since(timeStart)
 	fmt.Printf("Resolved in : %s\n", elapsed)

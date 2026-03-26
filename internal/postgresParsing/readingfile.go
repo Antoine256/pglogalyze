@@ -17,12 +17,7 @@ type Options struct {
 	NBLines     int
 }
 
-func ReadLogFile(options Options, timeStart time.Time) {
-
-	elapsed := time.Since(timeStart)
-	tmpTime := time.Now()
-	elapsedTmp := time.Since(tmpTime)
-	fmt.Println("Start reading after ", elapsed)
+func ReadLogFile(options Options) {
 
 	osfile, err := os.Open(options.LogFilePath)
 
@@ -31,11 +26,6 @@ func ReadLogFile(options Options, timeStart time.Time) {
 	}
 
 	lines := getLines(osfile, options)
-
-	elapsed = time.Since(timeStart)
-	elapsedTmp = time.Since(tmpTime)
-	fmt.Println("finish parsed file after ", elapsed, "=> duration : ", elapsedTmp)
-	tmpTime = time.Now()
 
 	fmt.Println("Lines found : " + internal.Yellow.String() + strconv.Itoa(len(lines)) + "/" + strconv.Itoa(options.NBLines) + internal.Reset.String())
 
