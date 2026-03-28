@@ -13,7 +13,7 @@ import (
 
 var file = flag.String("f", "", "PostgreSQL log file")
 var severityLevel = flag.String("l", "", "Severity level")
-var logType = flag.String("t", "", "Type of the log : QUERY | CONNECTION | DURATION | CHECKPOINT | STARTUP | SHUTDOWN")
+var logType = flag.String("t", "", "Type of the log : APPLI | QUERY | CONNECTION | DURATION | CHECKPOINT | STARTUP | SHUTDOWN")
 var start = flag.String("st", "", "Start time (YYYY-MM-DDTHH:MM:SS)")
 var end = flag.String("et", "", "End time (YYYY-MM-DDTHH:MM:SS)")
 var nbLines = flag.Int("n", 20, "Number of lines")
@@ -62,7 +62,7 @@ func main() {
 		if postgresparsing.IsAValidType(LType) {
 			options.LogType = postgresparsing.LType(LType)
 		} else {
-			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -l (severity level) doesn t exist")
+			fmt.Fprintln(os.Stderr, internal.Red, "Error", internal.Reset, ": -t (type) doesn t exist")
 		}
 	}
 
@@ -104,7 +104,7 @@ func main() {
 		return
 	}
 
-	fmt.Fprintln(os.Stdout, "Number of lines : ", internal.Yellow, strconv.Itoa((options.NBLines)), internal.Reset)
+	fmt.Fprintln(os.Stdout, "Number of lines searched : ", internal.Yellow, strconv.Itoa((options.NBLines)), internal.Reset)
 
 	//----------------------- READING LOG FILE -----------------------
 	fmt.Println("---------------------- LOGS ----------------------")

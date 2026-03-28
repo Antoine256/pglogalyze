@@ -14,20 +14,16 @@ import (
 // le tableau est parcouru, si la lignes correspond à un début de log elle est parsée,
 // et si elle correpond aux paramètres en entré elle est ajoutée, la fonction se stop lorsque le nombre de ligne voulu est atteint.
 
-func getLines(file *os.File, options Options) []ParsedLineType {
+func getLines(file *os.File, options Options, lines *[]ParsedLineType, offset int64) {
 	r, _ := regexp.Compile(`^\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d\.\d\d\d \w+ \[\d+\] \w+: .*`)
 	r2, _ := regexp.Compile(`^\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d\.\d\d\d \w+ \[\d+\] \w+@\w+ \w+: .*`)
 	buffer := ""
-	lines := []ParsedLineType{}
 
 	const blockSize = 4096
 	const maxBufferSize = 1 * 1024 * 1024 // 1MB
 	var remainder []byte
 
-	stat, _ := file.Stat()
-	size := stat.Size()
-
-	for offset := size; offset > 0; {
+	for offset > 0 {
 		// Initialisation de readSize (taille du bloc lu)
 		readSize := blockSize
 		if offset < blockSize {
@@ -72,20 +68,26 @@ func getLines(file *os.File, options Options) []ParsedLineType {
 			if r.MatchString(line) || r2.MatchString(line) {
 				// Si la ligne corerespond à un début de log, on vérifie qu'elle correspond aux paramètres
 				parsedLine := parseLine(buffer)
+				// Si la ligne est avant la date de début on arrête de lire
+				if options.StartTime != nil {
+					if parsedLine.time.Before(*options.StartTime) {
+						return
+					}
+				}
 				if isValidLine(parsedLine, options) {
-					lines = append(lines, parsedLine)
+					*lines = append(*lines, parsedLine)
 				}
 				buffer = ""
 			}
 		}
 
-		if len(lines) >= options.NBLines {
-			return lines[:options.NBLines]
+		if len(*lines) >= options.NBLines {
+			return
 		}
 
 	}
 
-	// GERER CE QUIL RESTE DANS LE REMAINDER... première ligne du fichier normalement
+	// GERER CE QUIL RESTE DANS LE REMAINDER
 	if len(remainder) > 0 {
 		buffer = string(remainder) + buffer
 		// traiter buffer comme une dernière ligne
@@ -96,24 +98,15 @@ func getLines(file *os.File, options Options) []ParsedLineType {
 			// Si la ligne corerespond à un début de log, on vérifie qu'elle correspond aux paramètres
 			parsedLine := parseLine(buffer)
 			if isValidLine(parsedLine, options) {
-				lines = append(lines, parsedLine)
+				*lines = append(*lines, parsedLine)
 			}
 			buffer = ""
 		}
 	}
 
-	return lines
-
 }
 
 func isValidLine(line ParsedLineType, options Options) bool {
-	// Start and End time parameters
-
-	if options.StartTime != nil {
-		if line.time.Compare(*options.StartTime) < 0 {
-			return false
-		}
-	}
 
 	if options.EndTime != nil {
 		if line.time.Compare(*options.EndTime) > 0 {
@@ -131,7 +124,7 @@ func isValidLine(line ParsedLineType, options Options) bool {
 
 	//LogType parameter
 	if options.LogType != ALL {
-		if line.logtype != options.LogType {
+		if line.logtype != options.LogType && !(options.LogType == LType("APPLI") && line.bddInfo != "") {
 			return false
 		}
 	}

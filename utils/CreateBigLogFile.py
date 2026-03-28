@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 OUTPUT_FILE = "pg_logs_test.log"
-NUM_LINES = 1000000  # nombre de lignes à générer
+NUM_LINES = 100000000  # nombre de lignes à générer
 
 LEVELS = ["DEBUG", "LOG", "INFO", "NOTICE", "WARNING", "ERROR", "FATAL", "PANIC"]
 USERS = ["alice", "bob", "carol", "dave", "eve", "frank"]

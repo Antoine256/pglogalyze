@@ -25,7 +25,31 @@ func ReadLogFile(options Options) {
 		internal.PrintError("internal\\postgresParsing\\readingfile.go", err.Error())
 	}
 
-	lines := getLines(osfile, options)
+	lines := make([]ParsedLineType, 0, options.NBLines)
+	stat, _ := osfile.Stat()
+	size := stat.Size()
+
+	// If time options, verify first and last line...
+	if options.StartTime != nil || options.EndTime != nil {
+		verifLines, err := verifFirstAndLastLines(osfile, options)
+		if !verifLines {
+			if err != nil {
+				fmt.Fprintln(os.Stderr, internal.Red, "ERROR ", err.Error())
+			}
+		}
+	}
+
+	// if Endtime, get offset closest line to endtime
+	if options.EndTime != nil {
+		if parseLine(getLastLineOfFile(*osfile)).time.Compare(*options.EndTime) < 0 {
+			fmt.Fprintln(os.Stdout, internal.Blue, "INFO : La dernière ligne est antérieur au paramètre EndTime")
+		} else {
+			offset := getTimeOffset(osfile, options, size)
+			size = offset
+		}
+	}
+
+	getLines(osfile, options, &lines, size)
 
 	fmt.Println("Lines found : " + internal.Yellow.String() + strconv.Itoa(len(lines)) + "/" + strconv.Itoa(options.NBLines) + internal.Reset.String())
 
