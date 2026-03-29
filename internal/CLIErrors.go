@@ -1,10 +1,5 @@
 package internal
 
-import (
-	"fmt"
-	"os"
-)
-
 type CMDCOLOR int
 
 const (
@@ -28,16 +23,4 @@ func (cc CMDCOLOR) String() string {
 		return s
 	}
 	return ""
-}
-
-func paramsError(parameterName string, err string) {
-	fmt.Fprintln(os.Stderr, "wrong parameter ("+parameterName+") :", Red, err, Reset)
-}
-
-func PrintError(file string, err string) {
-	fmt.Fprintln(os.Stderr, "error in file "+file+" : ", Red, err, Reset)
-}
-
-func PrintInfo(info string) {
-	fmt.Fprintln(os.Stderr, Blue.String()+"info : ", info, Reset)
 }

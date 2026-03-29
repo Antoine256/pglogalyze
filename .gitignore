@@ -31,5 +31,7 @@ go.work.sum
 # .idea/
 # .vscode/
 /env
-postgresLocalRun.sh
 dataset/*
+UbuntuSharedFolder/*
+UbuntuSharedFolder
+utils/*

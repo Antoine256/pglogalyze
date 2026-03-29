@@ -29,6 +29,7 @@ const (
 type LType string
 
 const (
+	APPLI      LType = "APPLI"
 	QUERY      LType = "QUERY"
 	CONNECTION LType = "CONNECTION"
 	DURATION   LType = "DURATION"
@@ -37,26 +38,6 @@ const (
 	SHUTDOWN   LType = "SHUTDOWN"
 	ALL        LType = ""
 )
-
-func IsAValidSeverity(s string) bool {
-	s = strings.ToUpper(s)
-	switch s {
-	case "DEBUG1", "DEBUG2", "DEBUG3", "DEBUG4", "DEBUG5", "INFO", "NOTICE", "WARNING", "ERROR", "LOG", "FATAL", "PANIC", "STATEMENT", "DETAIL":
-		return true
-	default:
-		return false
-	}
-}
-
-func IsAValidType(s string) bool {
-	s = strings.ToUpper(s)
-	switch s {
-	case "QUERY", "CONNECTION", "DURATION", "CHECKPOINT", "STARTUP", "SHUTDOWN":
-		return true
-	default:
-		return false
-	}
-}
 
 type ParsedLineType struct {
 	date          string
@@ -71,16 +52,24 @@ type ParsedLineType struct {
 	logMessage    string
 }
 
-func parseLines(lines []string) []ParsedLineType {
-
-	parsedLogs := []ParsedLineType{}
-
-	for _, line := range lines {
-		parsedLine := parseLine(line)
-		parsedLogs = append(parsedLogs, parsedLine)
+func IsAValidSeverity(s string) bool {
+	s = strings.ToUpper(s)
+	switch s {
+	case "DEBUG1", "DEBUG2", "DEBUG3", "DEBUG4", "DEBUG5", "INFO", "NOTICE", "WARNING", "ERROR", "LOG", "FATAL", "PANIC", "STATEMENT", "DETAIL":
+		return true
+	default:
+		return false
 	}
+}
 
-	return parsedLogs
+func IsAValidType(s string) bool {
+	s = strings.ToUpper(s)
+	switch s {
+	case "APPLI", "QUERY", "CONNECTION", "DURATION", "CHECKPOINT", "STARTUP", "SHUTDOWN":
+		return true
+	default:
+		return false
+	}
 }
 
 func parseLine(line string) ParsedLineType {

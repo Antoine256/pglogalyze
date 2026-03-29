@@ -1,65 +1,95 @@
 # pglogalyze
 
+A fast CLI tool for searching and filtering PostgreSQL log files — with binary search for time-range queries on large files.
 
-produit simple => une commande à lancer en psql pour les droits ou sinon spécifié user mdp en option
+---
 
-analyze au présent en direct et/ou analyse des logs passés ?
+## Features
 
-lancement de la commande : pglogalyze --option1 --option2 parameter ....
+- **Time-range filtering** — find logs between a `startTime` and `endTime`
+- **Severity filtering** — filter by log level (ERROR, WARNING, INFO, etc.)
+- **Log type filtering** — filter by category (APPLI, QUERY, CONNECTION, DURATION, CHECKPOINT, STARTUP, SHUTDOWN)
+- **Binary search** — dichotomous offset search to efficiently locate time ranges in large files without scanning from the start
+- **Reverse block reading** — reads from the end of the file backwards, returning the most recent N matching lines
+- **Multi-line log support** — correctly groups continuation lines with their parent log entry
+- **Application log detection** — identifies `user@database` log lines
 
-Les différentes options :
-- lecture en direct (par défaut) ou dans un fichier spécifié sinon 
-- spécifié l'instance sinon variables globales ?
-- niveau de log (voir si je peux récupérer le niveau de verbosité de postgres s'il y en a un et afficher une erreur si c'est incompatible)
-- user mdp
-- database spécifique
-- type de log à surveiller (connexion, erreur de requête, timeout... voir en fonction des erreurs courantes postgres)
-- recherche d'un mot spécifique
-(METTRE DES COULEURS)
-pour récupérer les logs : https://betterstack.com/community/guides/logging/how-to-start-logging-with-postgresql/
+---
 
-$> pglogalyze --option1 --option2 parameter
--- analyse de l'instance postgres "Nom de l'instance (en paramètre ou par défaut)
-surveillance des logs (AVEC LES OPTIONS) des fichiers suivants :
-- /data/pgsql/13/log/postgresql.log
-- /data/pgsql/15/log/postgresql.log
+## Installation
 
-Logs (LES 10 DERNIERS ?):
+```bash
+git clone https://github.com/Antoine256/pglogalyze
+cd pglogalyze
+go build -o pglogalyze ./cmd/pglogalyze
+```
 
-- 2023-07-30 08:31:50.628 UTC [2176] user@database listening on IPv4 address "127.0.0.1", port 5432
-.
-.
-.
-.
-.
+Requires Go 1.21+.
 
+---
 
-## V1
+## Usage
 
-un fichier donné par l'utilisateur => récupérer le paramètre et parser les lignes, donner le nombre d'erreur.
+```
+./pglogalyze -f <logfile> [options]
+```
 
+### Options
 
-En dev :
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `-f` | string | *(required)* | Path to the PostgreSQL log file |
+| `-n` | int | `20` | Number of log entries to return |
+| `-l` | string | | Severity level filter (e.g. `ERROR`, `WARNING`, `INFO`) |
+| `-t` | string | | Log type filter (`APPLI`, `QUERY`, `CONNECTION`, `DURATION`, `CHECKPOINT`, `STARTUP`, `SHUTDOWN`) |
+| `-st` | string | | Start time filter, format: `YYYY-MM-DDTHH:MM:SS` |
+| `-et` | string | | End time filter, format: `YYYY-MM-DDTHH:MM:SS` |
 
-go run .\cmd\pglogalyze\main.go ....
-exemple : go run .\cmd\pglogalyze\main.go  -f ../../../Desktop/psql/log/postgresql-2026-01-18_124734.log -st 2026-01-18 12:51:00 -et 2026-01-18 14:30:34
+### Examples
 
-Pour BUILD :
+Get the last 20 log entries:
+```bash
+./pglogalyze -f /var/log/postgresql/postgresql.log
+```
 
-//go build -o pglogalyze ./cmd/pglogalyze
-//go build -o C:\Users\dupas\Documents\GitHub\pglogalyze ./cmd/pglogalyze
+Get the last 50 ERROR logs:
+```bash
+./pglogalyze -f postgresql.log -n 50 -l ERROR
+```
 
-Lancer le script .\UbuntuSharedFolder\build.ps1 depuis la racine de ce projet pour build l'image en mode linux et que le fichier soit mis dans le dossier partager 
+Get logs between two timestamps:
+```bash
+./pglogalyze -f postgresql.log -st 2024-01-15T10:00:00 -et 2024-01-15T11:00:00
+```
 
-ensuite, il suffit de lancer la commande suivante depuis la VM ubuntu :
-pglogalyze -f /var/log/postgresql/postgresql-16-main.log -l LOG -et 2026-03-07T11:46:33
+Get the last 10 query logs after a given time:
+```bash
+./pglogalyze -f postgresql.log -st 2024-01-15T09:00:00 -t QUERY -n 10
+```
 
-pglogalyze -f ../../../Desktop/psql/log/postgresql-2026-01-18_124734.log -st 2026-01-18 12:51:00 -et 2026-01-18 14:30:34
+---
 
+## How it works
 
-V2 Ajout de fonctionnalitées d'annalyse...(applicatif vs infra ??), lecture en direct, database spécifiquement
-type de recherche: statement (aussi une severity), connection, duration, checkpoint, starting PostgreSQL and shutting down
+### Without time filters
+The file is read **backwards** in 4KB blocks using `ReadAt`. Multi-line log entries (continuation lines without a timestamp prefix) are accumulated into a buffer and grouped with their parent entry. Reading stops once N entries are collected.
 
-V3 définir l'os, dossier de log et le fichier le plus récent (ou en fonction de la date) et voir si l'user a le droit de lecture, voir si possible de récupérer via les infos du services postgres mais peut être compliqué en fonction des droits user.
- 
-mettre une limite de ligne par défaut et en paramètre.
+### With time filters
+1. The **first and last lines** of the file are checked to quickly discard files with no matching entries.
+2. A **binary search** (dichotomous offset search) locates the position in the file closest to `endTime`, by finding two consecutive timestamped lines that bracket the target time.
+3. The parser then reads **backwards from that offset**, collecting entries until it has N lines or reaches `startTime`.
+
+This avoids scanning the entire file for time-range queries, making it efficient even on multi-GB log files.
+
+---
+
+## Log format
+
+pglogalyze expects standard PostgreSQL log lines in the format:
+
+```
+YYYY-MM-DD HH:MM:SS.mmm TZ [PID] LEVEL: message
+YYYY-MM-DD HH:MM:SS.mmm TZ [PID] user@database LEVEL: message
+```
+
+---

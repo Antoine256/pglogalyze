@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -28,7 +29,7 @@ func StringToTimeYMD(str string) (int, time.Month, int) {
 	day, err := strconv.Atoi(splitStr[2])
 
 	if err != nil {
-		PrintError("Parsing line file StringToTimeYMD", err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 	}
 
 	month := time.Month(intMonth)
@@ -46,7 +47,7 @@ func StringToTimeHMS(str string) (int, int, int) {
 	seconds, err := strconv.Atoi(strings.Split(splitStr[2], ".")[0])
 
 	if err != nil {
-		PrintError("Parsing line file StringToTimeHMS", err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 	}
 
 	return hour, minute, seconds
