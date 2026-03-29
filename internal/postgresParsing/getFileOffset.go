@@ -10,14 +10,6 @@ import (
 	"time"
 )
 
-// ////
-//
-// Fonction pour lire et récupérer les lignes du fichier de log en fonction des paramètre passé par l'utilisateur.
-// La fonction lit le fichier en partant de la fin, block de bits par block de bits
-// Chaque block est annalysé au fur et à mesure, les lignes sont reconnues et placé dans un tableau,
-// le tableau est parcouru, si la lignes correspond à un début de log elle est parsée,
-// et si elle correpond aux paramètres en entré elle est ajoutée, la fonction se stop lorsque le nombre de ligne voulu est atteint.
-
 func getTimeOffset(file *os.File, options Options, size int64) int64 {
 
 	// On recherche avec dichotimie la une ligne dans les temps (au moins une lignes correspond)
