@@ -22,7 +22,7 @@ func ReadLogFile(options Options) {
 	osfile, err := os.Open(options.LogFilePath)
 
 	if err != nil {
-		internal.PrintError("internal\\postgresParsing\\readingfile.go", err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 	}
 
 	lines := make([]ParsedLineType, 0, options.NBLines)
