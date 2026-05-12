@@ -8,6 +8,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,21 +24,17 @@ jobs:
         go-version: '1.25.5'
 
     - name: Build Linux
-      run: |
-        GOOS=linux GOARCH=amd64 \
-        go build -o pglogalyze-linux-amd64 ./cmd/pglogalyze
+      run: GOOS=linux GOARCH=amd64 go build -o pglogalyze-linux ./cmd/pglogalyze
 
     - name: Build Windows
-      run: |
-        GOOS=windows GOARCH=amd64 \
-        go build -o pglogalyze-windows-amd64.exe ./cmd/pglogalyze
+      run: GOOS=windows GOARCH=amd64 go build -o pglogalyze-windows.exe ./cmd/pglogalyze
 
-    - name: Create Release
+    - name: Release
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          pglogalyze-linux-amd64
-          pglogalyze-windows-amd64.exe
+          pglogalyze-linux
+          pglogalyze-windows.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
